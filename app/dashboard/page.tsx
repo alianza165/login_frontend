@@ -9,6 +9,7 @@ export default function DashboardPage() {
       redirect("/login");
     },
   });
+  console.log(session.user)
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/login" }); // Redirect to login page after sign-out
@@ -17,7 +18,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>Welcome, {session?.user?.username}!</p>
+      <p>Welcome, {session?.user?.Username}!</p>
       <button onClick={handleSignOut}>Sign Out</button>
     </div>
   );

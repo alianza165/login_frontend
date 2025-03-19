@@ -13,10 +13,15 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/accounts/register/", {
-        email,
-        username,
-        password,
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("username", username);
+      formData.append("password", password);
+
+      const response = await axios.post("http://localhost:8000/accounts/register/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",  // Use form data
+        },
       });
 
       if (response.status === 200) {

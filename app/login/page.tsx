@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function LoginPage() {
     e.preventDefault();
     const result = await signIn("credentials", {
       redirect: false,
-      username,
+      email,  // Use email instead of username
       password,
     });
 
@@ -45,11 +45,11 @@ export default function LoginPage() {
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label>
+          <label>Email</label>
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>

@@ -9,11 +9,18 @@ export default function VerifyEmailPage({ searchParams }: { searchParams: { emai
   const router = useRouter();
 
   const handleSubmit = async (e) => {
+    console.log(searchParams.email)
+    console.log(code)
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/accounts/verify-email/", {
-        email: searchParams.email,
-        code,
+      const formData = new FormData();
+      formData.append("email", searchParams.email);
+      formData.append("code", code);
+
+      const response = await axios.post("http://localhost:8000/accounts/verify-email/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",  // Use form data
+        },
       });
 
       if (response.status === 201) {

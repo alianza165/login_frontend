@@ -12,21 +12,21 @@ const authOptions: AuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "Enter username" },
+        email: { label: "Email", type: "email", placeholder: "Enter email" },  // Use email
         password: { label: "Password", type: "password", placeholder: "Enter password" },
       },
       async authorize(credentials) {
         try {
           const response = await axios.post("http://localhost:8000/api/token/", {
-            username: credentials?.username,
+            email: credentials?.email,  // Use email instead of username
             password: credentials?.password,
           });
 
           if (response.status === 200) {
             const { access, refresh } = response.data;
             return {
-              id: credentials.username, // Use a unique identifier
-              username: credentials.username,
+              id: credentials.email,  // Use email as the unique identifier
+              email: credentials.email,
               accessToken: access,
               refreshToken: refresh,
             };
@@ -43,15 +43,15 @@ const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         // For Google login, set the username to the email (or name) if username is not provided
-        token.username = user.username || user.name || user.email;
+        token.email = user.email || user.name || user.email;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
       return token;
     },
     async session({ session, token }) {
-      // Ensure the username is available in the session
-      session.user.username = token.username;
+      // Ensure the email is available in the session
+      session.user.email = token.email;
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       return session;
