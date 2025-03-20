@@ -45,9 +45,38 @@ const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          // Check if the email is already registered
+          const response = await axios.post("http://localhost:8000/accounts/google-login/", {
+            email: user.email,
+            name: user.name,
+          }, {
+            headers: {
+              "Content-Type": "application/json",  // Use JSON
+            },
+          });
+
+          if (response.status === 200) {
+            const { access, refresh, username } = response.data;
+            user.accessToken = access;
+            user.refreshToken = refresh;
+            user.username = username;
+            return true;
+          } else if (response.status === 400) {
+            // Email already exists
+            return "/login?error=EmailAlreadyExists";
+          }
+        } catch (error) {
+          console.error("Google login error:", error.response?.data || error.message);
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
-        // Include username in the token
         token.email = user.email;
         token.username = user.username;
         token.accessToken = user.accessToken;
@@ -56,7 +85,6 @@ const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Include username in the session
       session.user.email = token.email;
       session.user.username = token.username;
       session.accessToken = token.accessToken;
@@ -64,8 +92,8 @@ const authOptions: AuthOptions = {
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET, // Ensure the secret is set
-  debug: true, // Enable debug mode for additional logs
+  secret: process.env.AUTH_SECRET,
+  debug: true,
 };
 
 export default authOptions;

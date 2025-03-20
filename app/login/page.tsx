@@ -16,13 +16,16 @@ export default function LoginPage() {
     if (toast) {
       alert(toast);
     }
-  }, [toast]);
+    if (searchParams.get("error") === "EmailAlreadyExists") {
+      setError("This email is already registered. Please log in with your existing account.");
+    }
+  }, [toast, searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await signIn("credentials", {
       redirect: false,
-      email,  // Use email instead of username
+      email,
       password,
     });
 
@@ -34,7 +37,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    const result = await signIn("google", { callbackUrl: "/" }); // Redirect to home after login
+    const result = await signIn("google", { callbackUrl: "/" });
     if (result?.error) {
       setError(result.error);
     }
