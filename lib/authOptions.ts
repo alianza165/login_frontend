@@ -12,21 +12,26 @@ const authOptions: AuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "Enter email" },  // Use email
+        email: { label: "Email", type: "email", placeholder: "Enter email" },
         password: { label: "Password", type: "password", placeholder: "Enter password" },
       },
       async authorize(credentials) {
         try {
-          const response = await axios.post("http://localhost:8000/api/token/", {
-            email: credentials?.email,  // Use email instead of username
+          console.log("Credentials received:", credentials);
+
+          const response = await axios.post("http://localhost:8000/accounts/token/", {
+            email: credentials?.email,
             password: credentials?.password,
           });
 
+          console.log("API Response:", response.data);
+
           if (response.status === 200) {
-            const { access, refresh } = response.data;
+            const { access, refresh, username } = response.data;  // Include username
             return {
               id: credentials.email,  // Use email as the unique identifier
               email: credentials.email,
+              username,  // Include username
               accessToken: access,
               refreshToken: refresh,
             };
@@ -42,16 +47,18 @@ const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // For Google login, set the username to the email (or name) if username is not provided
-        token.email = user.email || user.name || user.email;
+        // Include username in the token
+        token.email = user.email;
+        token.username = user.username;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
       return token;
     },
     async session({ session, token }) {
-      // Ensure the email is available in the session
+      // Include username in the session
       session.user.email = token.email;
+      session.user.username = token.username;
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       return session;

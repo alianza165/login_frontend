@@ -18,7 +18,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>Welcome, {session?.user?.Username}!</p>
+      <p>Welcome, {session?.user?.username}!</p>
       <button onClick={handleSignOut}>Sign Out</button>
     </div>
   );
