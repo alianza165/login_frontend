@@ -20,13 +20,13 @@ export default function RegisterPage() {
 
       const response = await axios.post("http://localhost:8000/accounts/register/", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",  // Use form data
+          "Content-Type": "multipart/form-data",
         },
       });
 
       if (response.status === 200) {
-        // Redirect to the verification page
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        // Inform the user to check their email
+        alert("Verification link sent to your email. Please check your inbox.");
       }
     } catch (error) {
       setError(error.response?.data?.error || "Registration failed");

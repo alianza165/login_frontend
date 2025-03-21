@@ -54,8 +54,9 @@ const authOptions: AuthOptions = {
             name: user.name,
           }, {
             headers: {
-              "Content-Type": "application/json",  // Use JSON
+              "Content-Type": "application/json",
             },
+            validateStatus: (status) => status === 200 || status === 400,
           });
 
           if (response.status === 200) {
@@ -66,7 +67,7 @@ const authOptions: AuthOptions = {
             return true;
           } else if (response.status === 400) {
             // Email already exists
-            return "/login?error=EmailAlreadyExists";
+            return `/auth/error?error=EmailAlreadyExists&email=${encodeURIComponent(user.email)}`;
           }
         } catch (error) {
           console.error("Google login error:", error.response?.data || error.message);
@@ -91,6 +92,9 @@ const authOptions: AuthOptions = {
       session.refreshToken = token.refreshToken;
       return session;
     },
+  },
+  pages: {
+    error: "/auth/error", // Custom error page
   },
   secret: process.env.AUTH_SECRET,
   debug: true,
